@@ -26,7 +26,7 @@ function App() {
 
   const fetchDocuments = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/documents");
+      const res = await axios.get("https://ai-chat-rag-lang.onrender.com/documents");
       if (res.data.success) {
         setDocuments(res.data.documents);
         // Automatically select the first document if available and none selected
@@ -47,7 +47,7 @@ function App() {
       const formData = new FormData();
       formData.append("pdf", file);
 
-      const res = await axios.post("http://localhost:5000/upload-pdf", formData);
+      const res = await axios.post("https://ai-chat-rag-lang.onrender.com/upload-pdf", formData);
       if (res.data.success) {
         alert("PDF Uploaded and Analyzed Successfully");
         await fetchDocuments();
@@ -92,7 +92,7 @@ function App() {
 
     try {
       setLoading(true);
-      const res = await axios.delete(`http://localhost:5000/documents/${id}`);
+      const res = await axios.delete(`https://ai-chat-rag-lang.onrender.com/documents/${id}`);
       if (res.data.success) {
         setDocuments((prev) => prev.filter((doc) => doc._id !== id));
         if (selectedDocId === id) {
@@ -123,7 +123,7 @@ function App() {
 
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5000/ask-pdf", {
+      const res = await axios.post("https://ai-chat-rag-lang.onrender.com/ask-pdf", {
         question: currentQuestion,
         documentId: selectedDocId,
       });

@@ -215,6 +215,158 @@ Frontend Response
 
 ---
 
+# 🔌 API SPECIFICATION & INTEGRATION
+
+This section documents the communication protocol between the React frontend and the Express backend.
+
+## 1. Backend API (Base URL: `http://localhost:5000`)
+
+### 📂 Document Management
+
+#### A. Upload PDF Document
+* **Endpoint:** `POST /upload-pdf`
+* **Content-Type:** `multipart/form-data`
+* **Request Payload:**
+  * `pdf` (File): The PDF file to be uploaded and processed.
+* **Flow:** Uploads PDF → Extracts text using `pdf-parse` → Chunks text using LangChain `RecursiveCharacterTextSplitter` → Embeds chunks using Gemini `gemini-embedding-2` → Saves document metadata & vectors to MongoDB Atlas Vector Search.
+* **Success Response (200 OK):**
+  ```json
+  {
+    "success": true,
+    "documentId": "65bdf9...",
+    "documentName": "financial_report.pdf",
+    "totalChunks": 15
+  }
+  ```
+
+#### B. Fetch All Documents
+* **Endpoint:** `GET /documents`
+* **Description:** Retrieves all uploaded PDF metadata records sorted by creation date (newest first).
+* **Success Response (200 OK):**
+  ```json
+  {
+    "success": true,
+    "documents": [
+      {
+        "_id": "65bdf9...",
+        "name": "financial_report.pdf",
+        "createdAt": "2026-05-23T14:12:21.000Z",
+        "updatedAt": "2026-05-23T14:12:21.000Z",
+        "__v": 0
+      }
+    ]
+  }
+  ```
+
+#### C. Delete Document & Embeddings
+* **Endpoint:** `DELETE /documents/:id`
+* **Description:** Deletes the document metadata record and clears all associated chunk embeddings from the Vector Store.
+* **URL Parameters:**
+  * `id` (String): The MongoDB ObjectId (`_id`) of the document to delete.
+* **Success Response (200 OK):**
+  ```json
+  {
+    "success": true,
+    "message": "Document and embeddings deleted"
+  }
+  ```
+
+---
+
+### 💬 Chat & Querying APIs
+
+#### A. Ask PDF (RAG Query)
+* **Endpoint:** `POST /ask-pdf`
+* **Content-Type:** `application/json`
+* **Request Body:**
+  ```json
+  {
+    "question": "What are the Q3 highlights?",
+    "documentId": "65bdf9..."
+  }
+  ```
+* **Flow:** Generates query embedding → Searches MongoDB Atlas Vector Search (scoped to `documentId` if provided) → Passes matched chunks as context to `gemini-2.5-flash` → Generates localized answer.
+* **Success Response (200 OK):**
+  ```json
+  {
+    "success": true,
+    "answer": "Q3 highlights include a 15% increase in revenue...",
+    "matchedChunks": [
+      {
+        "text": "In Q3, revenue increased by 15% year-over-year...",
+        "documentId": "65bdf9...",
+        "createdAt": "..."
+      }
+    ]
+  }
+  ```
+
+#### B. Direct Chat (General LLM)
+* **Endpoint:** `POST /chat`
+* **Content-Type:** `application/json`
+* **Request Body:**
+  ```json
+  {
+    "messages": [
+      {
+        "role": "user",
+        "text": "Hello"
+      }
+    ]
+  }
+  ```
+* **Success Response (200 OK):**
+  ```json
+  {
+    "success": true,
+    "reply": "Hello! How can I help you today?"
+  }
+  ```
+
+---
+
+## 2. Frontend API & Axios Integration
+
+The client app is built using React and uses `axios` to coordinate API requests.
+
+### 🌐 API Client Configuration
+All request endpoints target `http://localhost:5000`.
+
+### 🔄 React States Used (`src/App.jsx`):
+* `documents` (Array): Stores metadata of all files.
+* `selectedDocId` (String): ID of the currently selected PDF document.
+* `messages` (Array): Active conversation history, containing `{ role: "user" | "ai", text: string, matchedChunks: Array }`.
+* `loading` (Boolean): Controls spinner and disables buttons during network activities.
+
+### 🔌 Main Integration Methods (`src/App.jsx`):
+
+* **Fetch Documents (`fetchDocuments`):**
+  ```javascript
+  const res = await axios.get("http://localhost:5000/documents");
+  if (res.data.success) {
+    setDocuments(res.data.documents);
+  }
+  ```
+* **Upload PDF (`uploadFile`):**
+  ```javascript
+  const formData = new FormData();
+  formData.append("pdf", file);
+  const res = await axios.post("http://localhost:5000/upload-pdf", formData);
+  ```
+* **Delete PDF (`deleteDocument`):**
+  ```javascript
+  const res = await axios.delete(`http://localhost:5000/documents/${id}`);
+  ```
+* **Submit RAG Question (`sendMessage`):**
+  ```javascript
+  const res = await axios.post("http://localhost:5000/ask-pdf", {
+    question: currentQuestion,
+    documentId: selectedDocId,
+  });
+  ```
+
+---
+
 # ⚠️ CURRENT PROBLEMS
 
 ---
