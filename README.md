@@ -4,6 +4,60 @@ This repository contains the client-side code for a secure, responsive, and feat
 
 ---
 
+## 📊 System Architecture & Data Flow
+
+```mermaid
+graph TD
+    %% Frontend Components
+    subgraph Client [React Frontend]
+        LS[(Browser LocalStorage)]
+        C_Context[ChatContext State]
+        C_UI[Chat Workspace & Profile UI]
+        Axios[Axios API Client & Interceptors]
+    end
+
+    %% Backend Services
+    subgraph Server [Node.js Express Backend]
+        Auth_Mid[Auth Middleware]
+        Upload_Mid[Multer PDF Upload]
+        Doc_Ctrl[Document Controller]
+        Chat_Ctrl[Chat Controller]
+        Gem_Resolver[Dynamic Gemini Resolver]
+    end
+
+    %% External APIs & Databases
+    subgraph External [External Services]
+        DB[(MongoDB Database)]
+        Gemini[Google Gemini API]
+    end
+
+    %% Connections - Auth & Storage
+    C_UI -->|Register / Login| Axios
+    Axios -->|POST /auth/login| Auth_Mid
+    Auth_Mid -->|Verify Bcrypt Hash| DB
+    Auth_Mid -->|Generate JWT| Axios
+    Axios -->|Store Token & Gemini Key| LS
+
+    %% Connections - Ingestion
+    C_UI -->|Upload PDF file| Axios
+    Axios -->|POST /upload-pdf| Upload_Mid
+    Upload_Mid -->|Parse Page-by-Page Text| Doc_Ctrl
+    Doc_Ctrl -->|Embed Chunks| Gem_Resolver
+    Gem_Resolver -->|Gemini Embedding API| Gemini
+    Doc_Ctrl -->|Save Chunks, Vectors & pageNumber| DB
+
+    %% Connections - RAG Chat
+    C_UI -->|Ask Question| Axios
+    Axios -->|Interceptors add JWT & x-gemini-key| Chat_Ctrl
+    Chat_Ctrl -->|Vector Search with userId Filter| DB
+    Chat_Ctrl -->|Embed Query & Generate Answer| Gem_Resolver
+    Gem_Resolver -->|Gemini-2.5-Flash with includeThoughts| Gemini
+    Chat_Ctrl -->|Return Reply + Thoughts + Citations| Axios
+    Axios -->|Restore Context State & Render UI| C_UI
+```
+
+---
+
 ## 🚀 Key Features
 
 ### 1. 🔐 Multi-User Isolation & JWT Authentication
