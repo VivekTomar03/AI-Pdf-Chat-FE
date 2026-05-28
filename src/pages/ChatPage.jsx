@@ -124,6 +124,7 @@ function ChatPage() {
     setDeleteLoading,
     fetchDocuments,
     clearChatState,
+    deleteDocHistory,
   } = useContext(ChatContext);
 
   const [message, setMessage] = useState("");
@@ -221,9 +222,9 @@ function ChatPage() {
       const res = await api.delete(`/documents/${id}`);
       if (res.data.success) {
         setDocuments((prev) => prev.filter((doc) => doc._id !== id));
+        deleteDocHistory(id);
         if (selectedDocId === id) {
           setSelectedDocId("");
-          setMessages([]);
         }
       }
     } catch (error) {
@@ -369,7 +370,6 @@ function ChatPage() {
                     onClick={() => {
                       if (!deleteLoading && !uploadLoading) {
                         setSelectedDocId(doc._id);
-                        setMessages([]); // Clear chat history when switching documents
                         setSidebarOpen(false); // Close sidebar on mobile
                       }
                     }}

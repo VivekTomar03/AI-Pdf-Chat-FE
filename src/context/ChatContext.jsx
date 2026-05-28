@@ -4,13 +4,35 @@ import api from "../api";
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
-  const [messages, setMessages] = useState([]);
+  const [chatHistories, setChatHistories] = useState({});
   const [documents, setDocuments] = useState([]);
   const [selectedDocId, setSelectedDocId] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [docsLoading, setDocsLoading] = useState(true);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(null);
+
+  const messages = selectedDocId ? (chatHistories[selectedDocId] || []) : [];
+
+  const setMessages = (update) => {
+    if (!selectedDocId) return;
+    setChatHistories((prev) => {
+      const currentHistory = prev[selectedDocId] || [];
+      const newHistory = typeof update === "function" ? update(currentHistory) : update;
+      return {
+        ...prev,
+        [selectedDocId]: newHistory,
+      };
+    });
+  };
+
+  const deleteDocHistory = (docId) => {
+    setChatHistories((prev) => {
+      const copy = { ...prev };
+      delete copy[docId];
+      return copy;
+    });
+  };
 
   const fetchDocuments = async (logoutHandler) => {
     try {
@@ -34,7 +56,7 @@ export const ChatProvider = ({ children }) => {
   };
 
   const clearChatState = () => {
-    setMessages([]);
+    setChatHistories({});
     setDocuments([]);
     setSelectedDocId("");
     setChatLoading(false);
@@ -48,6 +70,7 @@ export const ChatProvider = ({ children }) => {
       value={{
         messages,
         setMessages,
+        deleteDocHistory,
         documents,
         setDocuments,
         selectedDocId,
