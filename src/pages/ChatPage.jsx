@@ -131,6 +131,14 @@ function ChatPage() {
   const [expandedSources, setExpandedSources] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const [expandedThoughts, setExpandedThoughts] = useState({});
+
+  const toggleThoughts = (index) => {
+    setExpandedThoughts((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
 
   const handleCopySource = (text, msgIdx, chunkIdx) => {
     navigator.clipboard.writeText(text);
@@ -249,6 +257,7 @@ function ChatPage() {
       const aiMessage = {
         role: "ai",
         text: res.data.answer,
+        thought: res.data.thought || null,
         matchedChunks: res.data.matchedChunks || [],
       };
 
@@ -438,6 +447,23 @@ function ChatPage() {
                   {msg.role === "user" ? "User" : "AI Assistant"}
                 </div>
 
+                {/* Collapsible Model Thinking Process */}
+                {msg.role === "ai" && msg.thought && (
+                  <div className="thought-container">
+                    <button
+                      className="thought-toggle-btn"
+                      onClick={() => toggleThoughts(index)}
+                    >
+                      {expandedThoughts[index] ? "🤔 Hide Thinking Process" : "🤔 Show Thinking Process"}
+                    </button>
+                    {expandedThoughts[index] && (
+                      <div className="thought-content-box">
+                        {parseMarkdown(msg.thought)}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Visual Citations and Chunk Highlights */}
                 {msg.role === "ai" && msg.matchedChunks && msg.matchedChunks.length > 0 && (
                   <div className="source-container">
@@ -478,8 +504,17 @@ function ChatPage() {
           )}
           {chatLoading && (
             <div className="message-wrapper ai">
-              <div className="message-bubble">
-                <div className="spinner"></div>
+              <div className="message-bubble" style={{ minWidth: "160px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div className="spinner-small"></div>
+                  <span style={{ fontSize: "14px", color: "var(--text-muted)" }}>Formulating answer...</span>
+                </div>
+              </div>
+              <div className="thought-container" style={{ marginTop: "10px" }}>
+                <div className="thought-content-box" style={{ marginTop: 0, display: "flex", alignItems: "center", gap: "8px", borderLeftColor: "var(--accent-color)" }}>
+                  <div className="spinner-small" style={{ borderTopColor: "var(--accent-color)", width: "12px", height: "12px" }}></div>
+                  <span style={{ fontSize: "13px", fontStyle: "italic", color: "var(--text-muted)" }}>Thinking about query and context...</span>
+                </div>
               </div>
             </div>
           )}
