@@ -324,52 +324,118 @@ body {
   margin-inline: 4px;
 }
 
-/* COLLAPSIBLE SOURCES */
+/* COLLAPSIBLE SOURCES & VISUAL CITATIONS */
 .source-container {
-  margin-top: 8px;
-  width: 70%;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 800px;
 }
 
 .source-toggle-btn {
   background: none;
   border: none;
   color: var(--accent-color);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .source-toggle-btn:hover {
-  background-color: rgba(99, 102, 241, 0.1);
+  background-color: var(--accent-glow);
 }
 
-.source-chunks {
-  margin-top: 8px;
+.source-cards-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.source-card {
+  background: rgba(30, 41, 59, 0.45);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.source-chunk {
-  background-color: rgba(30, 41, 59, 0.4);
+.source-card:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.15);
+  transform: translateY(-2px);
+}
+
+.source-card-header {
+  padding: 8px 12px;
+  background-color: rgba(15, 23, 42, 0.5);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.source-card-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #a5b4fc;
+  background-color: var(--accent-glow);
+  padding: 3px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.source-copy-btn {
+  background: rgba(15, 23, 42, 0.4);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 12px;
-  line-height: 1.4;
   color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.source-chunk strong {
+.source-copy-btn:hover {
   color: var(--text-main);
-  display: block;
-  margin-bottom: 4px;
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-hover);
+}
+
+.source-card-body {
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-align: left;
+  max-height: 140px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.source-card-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.source-card-body::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
 }
 
 /* CHAT INPUT AREA */

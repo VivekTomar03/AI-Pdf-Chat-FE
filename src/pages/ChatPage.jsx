@@ -130,6 +130,16 @@ function ChatPage() {
   const [dragActive, setDragActive] = useState(false);
   const [expandedSources, setExpandedSources] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState(null);
+
+  const handleCopySource = (text, msgIdx, chunkIdx) => {
+    navigator.clipboard.writeText(text);
+    const key = `${msgIdx}-${chunkIdx}`;
+    setCopiedIndex(key);
+    setTimeout(() => {
+      setCopiedIndex(null);
+    }, 2000);
+  };
 
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -428,21 +438,35 @@ function ChatPage() {
                   {msg.role === "user" ? "User" : "AI Assistant"}
                 </div>
 
-                {/* Retained sources list */}
+                {/* Visual Citations and Chunk Highlights */}
                 {msg.role === "ai" && msg.matchedChunks && msg.matchedChunks.length > 0 && (
                   <div className="source-container">
                     <button
                       className="source-toggle-btn"
                       onClick={() => toggleSources(index)}
                     >
-                      🔍 {expandedSources[index] ? "Hide Sources" : `Show Sources (${msg.matchedChunks.length})`}
+                      🔍 {expandedSources[index] ? "Hide Citations" : `Show Citations (${msg.matchedChunks.length})`}
                     </button>
                     {expandedSources[index] && (
-                      <div className="source-chunks">
+                      <div className="source-cards-grid">
                         {msg.matchedChunks.map((chunk, chunkIdx) => (
-                          <div key={chunkIdx} className="source-chunk">
-                            <strong>Source Chunk #{chunkIdx + 1}</strong>
-                            {chunk.text}
+                          <div key={chunkIdx} className="source-card">
+                            <div className="source-card-header">
+                              <span className="source-card-badge">
+                                📄 {chunk.pageNumber ? `Page ${chunk.pageNumber}` : `Source #${chunkIdx + 1}`}
+                              </span>
+                              <button
+                                type="button"
+                                className="source-copy-btn"
+                                onClick={() => handleCopySource(chunk.text, index, chunkIdx)}
+                                title="Copy source text to clipboard"
+                              >
+                                {copiedIndex === `${index}-${chunkIdx}` ? "✓ Copied" : "📋 Copy"}
+                              </button>
+                            </div>
+                            <div className="source-card-body">
+                              {chunk.text}
+                            </div>
                           </div>
                         ))}
                       </div>
