@@ -160,7 +160,7 @@ function ProfilePage() {
 
               <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
                 <button
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/chat")}
                   className="auth-button"
                   style={{ flexGrow: 1, background: "var(--border-color)", boxShadow: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
                 >

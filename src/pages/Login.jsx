@@ -18,7 +18,7 @@ function Login() {
       const res = await api.post("/auth/login", { email, password });
       if (res.data.success) {
         localStorage.setItem("token", res.data.token);
-        navigate("/");
+        navigate("/chat");
       }
     } catch (err) {
       console.error(err);

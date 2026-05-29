@@ -303,7 +303,9 @@ function ChatPage() {
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header" style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start' }}>
           <div className="sidebar-header-top" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            <h2>📄 AI PDF RAG Chat</h2>
+            <h2 onClick={() => navigate("/")} style={{ cursor: "pointer" }} title="Go to Landing Page">
+              📄 AI PDF RAG Chat
+            </h2>
             <button className="sidebar-close-btn" onClick={() => setSidebarOpen(false)} title="Close Menu">
               ✕
             </button>
