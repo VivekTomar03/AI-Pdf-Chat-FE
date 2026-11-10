@@ -1,0 +1,80 @@
+/*
+  Design tokens.
+  Direction: a reading room, not a chatbot. Warm paper neutrals, one deep ink
+  accent, and a highlighter amber reserved for citations, so evidence is the only
+  thing on the page that is "marked". Body text contrast is at least 4.5:1 in
+  both themes.
+*/
+
+:root {
+  color-scheme: light dark;
+
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --paper: #f6f4ef;
+  --surface: #fdfcf9;
+  --sunken: #eeebe4;
+  --ink: #1e1c18;
+  --ink-2: #48443d;
+  --ink-3: #6b665d;
+  --line: #e2ddd2;
+  --line-strong: #cbc4b5;
+
+  --accent: #1d5c54;
+  --accent-hover: #154740;
+  --accent-ink: #ffffff;
+  --accent-soft: #e0ebe8;
+
+  /* Highlighter, citations only */
+  --mark: #fbeec0;
+  --mark-ink: #5e4500;
+  --mark-line: #e3c76c;
+
+  --danger: #a3392a;
+  --danger-soft: #f8e5e1;
+  --focus: #1d5c54;
+
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow-pop: 0 1px 2px rgb(30 28 24 / 0.06), 0 14px 36px rgb(30 28 24 / 0.16);
+
+  --sidebar-w: 288px;
+  --column: 46rem;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  --z-topbar: 20;
+  --z-scrim: 40;
+  --z-drawer: 50;
+  --z-skip: 100;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #161512;
+    --surface: #1d1b18;
+    --sunken: #121110;
+    --ink: #ece8df;
+    --ink-2: #c4beb2;
+    --ink-3: #9a9487;
+    --line: #2c2924;
+    --line-strong: #403b34;
+
+    --accent: #7cc0b2;
+    --accent-hover: #96cfc3;
+    --accent-ink: #0f1b19;
+    --accent-soft: #1d2e2b;
+
+    --mark: #3a3119;
+    --mark-ink: #f2d98e;
+    --mark-line: #6e5c27;
+
+    --danger: #ee9381;
+    --danger-soft: #36201b;
+    --focus: #7cc0b2;
+
+    --shadow-pop: 0 1px 2px rgb(0 0 0 / 0.4), 0 18px 44px rgb(0 0 0 / 0.55);
+  }
+}
